@@ -17,6 +17,14 @@ export class UsersController {
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
+    const userAlreadyExists = this.usersService.findByEmail(
+      createUserDto.email,
+    );
+
+    if (userAlreadyExists) {
+      throw new Error('User already exists');
+    }
+
     return this.usersService.create(createUserDto);
   }
 

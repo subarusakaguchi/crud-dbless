@@ -10,6 +10,7 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { createHash } from 'crypto';
 
 @Controller('users')
 export class UsersController {
@@ -17,6 +18,10 @@ export class UsersController {
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
+    createUserDto.password = createHash('md5')
+      .update(createUserDto.password)
+      .digest('hex');
+
     const userAlreadyExists = this.usersService.findByEmail(
       createUserDto.email,
     );
@@ -40,6 +45,19 @@ export class UsersController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    if (
+      updateUserDto.email &&
+      this.usersService.findByEmail(updateUserDto.email)
+    ) {
+      throw new Error('Email already Exists');
+    }
+
+    if (updateUserDto.password) {
+      updateUserDto.password = createHash('md5')
+        .update(updateUserDto.password)
+        .digest('hex');
+    }
+
     return this.usersService.update(id, updateUserDto);
   }
 

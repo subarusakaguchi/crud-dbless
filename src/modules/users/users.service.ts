@@ -22,22 +22,26 @@ export class UsersService {
   }
 
   findAll() {
-    return `This action returns all users`;
+    return this.users;
   }
 
   findByEmail(email: string) {
     return this.users.find((user) => user.email === email);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  findOne(id: string) {
+    return this.users.find((user) => user.id === id);
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
+  update(id: string, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  remove(id: string) {
+    const userIndex = this.users.indexOf(this.findOne(id));
+
+    this.users.splice(userIndex, 1);
+
+    return { message: 'Deleted' };
   }
 }
